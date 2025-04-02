@@ -15,6 +15,12 @@
             <input type="text" id="user_answer" name="user_answer" required>
             <button type="submit">Submit</button>
         </form>
+
+        <!-- Feedback Section -->
+        {% if feedback %}
+            <p style="color: {{ feedback_color }}; font-weight: bold;">{{ feedback }}</p>
+            <p><strong>Correct Answer:</strong> {{ correct_answer }}</p>
+        {% endif %}
     </div>
 </body>
 </html>

@@ -50,6 +50,11 @@ def flashcards():
     flashcards = session['flashcards']
     current_index = int(session.get('current_index', 0))  # Ensure current_index is an int
     
+     # Initialize feedback variables
+    feedback = None  # "Correct Answer" or "Wrong Answer"
+    feedback_color = None  # Color for feedback ("green" or "red")
+    correct_answer = None  # The correct answer to display
+
     # Convert repetitions keys back to integers
     repetitions = {}
     for key, value in session.get('repetitions', {}).items():
@@ -71,7 +76,13 @@ def flashcards():
             repetitions[current_index] = {'count': 0, 'correct': False}
         
         if is_correct:
+            feedback = "Correct Answer"
+            feedback_color = "green"
             repetitions[current_index]['correct'] = True
+        
+        else:
+            feedback = "Wrong Answer"
+            feedback_color = "red"
 
         repetitions[current_index]['count'] = int(repetitions[current_index]['count']) + 1
 
@@ -91,7 +102,11 @@ def flashcards():
             session['current_index'] = current_index
             session['completed'] = [str(x) for x in completed]
             #print(f"Not enough repetitions yet. Keeping card {current_index}. Count: {repetitions[current_index]['count']}/{to_repeat}")
-            return redirect(url_for('flashcards'))
+            return render_template('flashcards.html', \
+                                   flashcard=flashcards[current_index], \
+                                   feedback=feedback, \
+                                   feedback_color=feedback_color, \
+                                   correct_answer=correct_answer)
         else:
             # Card is now fully completed
             completed.append(current_index)
@@ -124,7 +139,11 @@ def flashcards():
     
     #print(f"Next card: {next_index}, repetition count: {repetitions[next_index]['count']}")
 
-    return render_template('flashcards.html', flashcard=flashcards[next_index])
+    return render_template('flashcards.html', \
+                           flashcard=flashcards[next_index], \
+                           feedback=feedback, \
+                           feedback_color=feedback_color, \
+                           correct_answer=correct_answer)
 
 if __name__ == '__main__':
     app.run(debug=False, host='0.0.0.0')
